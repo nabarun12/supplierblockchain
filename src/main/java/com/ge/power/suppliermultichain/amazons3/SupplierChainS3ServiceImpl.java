@@ -1,3 +1,4 @@
+
 package com.ge.power.suppliermultichain.amazons3;
 
 
@@ -6,13 +7,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +28,13 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -33,6 +46,9 @@ public class SupplierChainS3ServiceImpl implements SupplierChainS3Service{
 		
 		@Autowired
 		protected TransferManager transferManager;
+		
+		@Autowired
+		protected AmazonS3 s3Client;
 	 
 		@Value("${s3.bucket}")
 		protected String bucketName;
@@ -46,14 +62,13 @@ public class SupplierChainS3ServiceImpl implements SupplierChainS3Service{
 		@Override
 		public void uploadFile(String keyNameVal, MultipartFile multipartUp) {
 		
-			File uploadFile = new File(System.getProperty("java.io.tmpdir")+"/"+multipartUp.getOriginalFilename());
+			
 			try {
-				multipartUp.transferTo(uploadFile);
-				//uploadFile = new File("C:\\Users\\502439033\\Desktop\\Logic flow for Doc verification.docx");
-			final PutObjectRequest request = new PutObjectRequest(bucketName, keyNameVal,uploadFile );
-			
-			
-			request.setGeneralProgressListener(new ProgressListener() {
+				
+				
+			final PutObjectRequest request = new PutObjectRequest(bucketName,keyNameVal, multipartUp.getInputStream(),new ObjectMetadata());
+			 request.setCannedAcl(CannedAccessControlList.PublicRead);
+			 request.setGeneralProgressListener(new ProgressListener() {
 				@Override
 				public void progressChanged(ProgressEvent progressEvent) {
 					String transferredBytes = "Uploaded bytes: " + progressEvent.getBytesTransferred();
@@ -65,7 +80,10 @@ public class SupplierChainS3ServiceImpl implements SupplierChainS3Service{
 			
 			// Or you can block and wait for the upload to finish
 			upload.waitForCompletion();
-				
+			
+			IOUtils.closeQuietly(multipartUp.getInputStream());
+			
+					
 			} catch (AmazonServiceException e) {
 				logger.info(e.getMessage());
 			} catch (AmazonClientException e) {
@@ -86,15 +104,40 @@ public class SupplierChainS3ServiceImpl implements SupplierChainS3Service{
 		 * DOWNLOAD FILE from Amazon S3
 		 */
 		@Override
-		public void downloadFile(HttpServletResponse response, String keyNameH) {
+		public ResponseEntity<byte[]> downloadFile(HttpServletResponse response, String keyNameH) {
 			
-			String fileName = keyNameH;
-			response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-			response.setHeader("Content-Disposition", "attachment; filename=" + fileName); 
+			GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, keyNameH);
+			S3Object s3Object = s3Client.getObject(getObjectRequest);
+
+	        S3ObjectInputStream objectInputStream = s3Object.getObjectContent();
+
+	        byte[] bytes = new byte[100000];
+			try {
+				bytes = IOUtils.toByteArray(objectInputStream);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+	        String fileName="";
+			try {
+				fileName = URLEncoder.encode(keyNameH, "UTF-8").replaceAll("\\+", "%20");
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			/*response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			response.setHeader("Content-Disposition", "attachment; filename=" + fileName); */
+	        HttpHeaders httpHeaders = new HttpHeaders();
+	        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+	        httpHeaders.setContentLength(bytes.length);
+	        httpHeaders.setContentDispositionFormData("attachment", fileName);
 			
-			final GetObjectRequest request = new GetObjectRequest(bucketName, keyNameH);
-			
-			request.setGeneralProgressListener(new ProgressListener() {
+			try {
+		
+
+	       // return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
+	        getObjectRequest.setGeneralProgressListener(new ProgressListener() {
 				@Override
 				public void progressChanged(ProgressEvent progressEvent) {
 					String transferredBytes = "Downloaded bytes: " + progressEvent.getBytesTransferred();
@@ -102,36 +145,16 @@ public class SupplierChainS3ServiceImpl implements SupplierChainS3Service{
 				}
 			});
 			
-			File fileDownload = new File(fileName);
-			Download download = transferManager.download(request, fileDownload);
-			
-			
-			try {
 				
-				download.waitForCompletion();
-				FileInputStream inStream  = new FileInputStream(fileDownload);
-				OutputStream outputStream = response.getOutputStream();
-				byte[] buffer = new byte[4096];
-		        int bytesRead = -1;
-		         
-		        while ((bytesRead = inStream.read(buffer)) != -1) {
-		        	outputStream.write(buffer, 0, bytesRead);
-		        }
-		         
-		        inStream.close();
-		        outputStream.close();
 				
 				
 			} catch (AmazonServiceException e) {
 				logger.info(e.getMessage());
 			} catch (AmazonClientException e) {
 				logger.info(e.getMessage());
-			} catch (InterruptedException e) {
-				logger.info(e.getMessage());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+			
+			return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
 		}
 
 }

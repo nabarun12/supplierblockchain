@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,8 +66,8 @@ public class SupplierController {
 	}
 	
 	@RequestMapping(value = "/downloadDocument/{keyName}", method = RequestMethod.GET, produces = "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-	public void downloadDocument(HttpServletResponse response, @PathVariable("keyName") String keyName) throws UnsupportedEncodingException{
-		supplierS3Service.downloadFile(response, keyName);
+	public ResponseEntity<byte[]> downloadDocument(HttpServletResponse response, @PathVariable("keyName") String keyName) throws UnsupportedEncodingException{
+		return supplierS3Service.downloadFile(response, keyName);
 	}
 	
 	
