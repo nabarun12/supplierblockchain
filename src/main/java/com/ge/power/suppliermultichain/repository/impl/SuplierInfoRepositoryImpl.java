@@ -28,9 +28,17 @@ public class SuplierInfoRepositoryImpl {
 	public Supplierinfo findSupplierByWalletAddress(String walletAddress) {
 		return supplierRepo.findByWalletAddress(walletAddress);
 	}
+	
+	public Supplierinfo findSupplierBySupplierName(String supplierName) {
+		return supplierRepo.findBySupplierName(supplierName);
+	}
 
 	public List<Supplierinfo> findAllSuppliers() {
 		return supplierRepo.findAll();
+	}
+	
+	public List<Supplierinfo> findAllPendingSuppliers() {
+		return supplierRepo.findAllPendingSuppliers();
 	}
 
 	public void deleteAllSuppliers() {

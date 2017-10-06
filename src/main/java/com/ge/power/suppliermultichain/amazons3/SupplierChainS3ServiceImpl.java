@@ -89,7 +89,7 @@ public class SupplierChainS3ServiceImpl implements SupplierChainS3Service{
 		public void downloadFile(HttpServletResponse response, String keyNameH) {
 			
 			String fileName = keyNameH;
-			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 			response.setHeader("Content-Disposition", "attachment; filename=" + fileName); 
 			
 			final GetObjectRequest request = new GetObjectRequest(bucketName, keyNameH);

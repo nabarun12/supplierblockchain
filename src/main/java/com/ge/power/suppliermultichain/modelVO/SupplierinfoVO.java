@@ -2,6 +2,8 @@ package com.ge.power.suppliermultichain.modelVO;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+
 import com.ge.power.suppliermultichain.model.Supplierinfo;
 
 
@@ -27,6 +29,42 @@ public class SupplierinfoVO implements Serializable {
 
 	
 	private String walletAddress;
+	
+	
+	private String comments;
+	
+	
+	private String emailAddress;
+	
+	
+	private String phoneNo;
+	
+	
+	private Integer isAdmin;
+	
+	private Integer isRegistered;	
+	
+	private String key;
+	
+	public Integer getIsAdmin() {
+		return isAdmin;
+	}
+	public void setIsAdmin(Integer isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+	public Integer getIsRegistered() {
+		return isRegistered;
+	}
+	public void setIsRegistered(Integer isRegistered) {
+		this.isRegistered = isRegistered;
+	}
+	public String getKey() {
+		return key;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
+	
 
 	public SupplierinfoVO(){};
 	public SupplierinfoVO(Supplierinfo supplierInfo) {
@@ -36,7 +74,12 @@ public class SupplierinfoVO implements Serializable {
 		this.supplierAddress = supplierInfo.getSupplierAddress();
 		this.supplierRating = supplierInfo.getSupplierRating();
 		this.walletAddress = supplierInfo.getWalletAddress();
-		
+		this.comments = supplierInfo.getComments();
+		this.emailAddress = supplierInfo.getEmailAddress();
+		this.phoneNo = supplierInfo.getPhoneNo();
+		this.isAdmin = supplierInfo.getIsAdmin();
+		this.isRegistered = supplierInfo.getIsRegistered();
+		this.key = supplierInfo.getKey();
 		
 	}
 
@@ -78,6 +121,24 @@ public class SupplierinfoVO implements Serializable {
 
 	public void setWalletAddress(String walletAddress) {
 		this.walletAddress = walletAddress;
+	}
+	public String getComments() {
+		return comments;
+	}
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	public String getPhoneNo() {
+		return phoneNo;
+	}
+	public void setPhoneNo(String phoneNo) {
+		this.phoneNo = phoneNo;
 	}
 
 	

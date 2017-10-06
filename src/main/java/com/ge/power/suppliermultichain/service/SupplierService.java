@@ -23,4 +23,8 @@ public interface SupplierService {
 	
 	public SupplierinfoVO findByWalletAddress(String walletAddress);
 	
+	public SupplierinfoVO findBySuppName(String walletAddress);
+	
+	public List<SupplierinfoVO> findPendingApprovalSupp();
+	
 }

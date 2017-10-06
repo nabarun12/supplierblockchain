@@ -23,7 +23,7 @@ public class Supplierinfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name = "supplier_seq" , sequenceName="supplier_seq" ,initialValue = 2, allocationSize=1 )
+	@SequenceGenerator(name = "supplier_seq" , sequenceName="supplier_seq" ,initialValue = 6, allocationSize=1 )
 	@GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "supplier_seq")
 	@Column(name="supplier_id")
 	private Integer supplierId;
@@ -39,17 +39,81 @@ public class Supplierinfo implements Serializable {
 
 	@Column(name="wallet_address")
 	private String walletAddress;
+	
+	@Column(name="comments")
+	private String comments;
+	
+	@Column(name="email_address")
+	private String emailAddress;
+	
+	@Column(name="phone_number")
+	private String phoneNo;
+	
+	@Column(name="is_admin")
+	private Integer isAdmin;
+	
+	@Column(name="is_registered")
+	private Integer isRegistered;	
+	
+	@Column(name="key")
+	private String key;
+	
+	public Integer getIsRegistered() {
+		return isRegistered;
+	}
+	public void setIsRegistered(Integer isRegistered) {
+		this.isRegistered = isRegistered;
+	}
 
+
+
+	public String getKey() {
+		return key;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
 	public Supplierinfo(){};
+	public String getComments() {
+		return comments;
+	}
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	public String getPhoneNo() {
+		return phoneNo;
+	}
+	public void setPhoneNo(String phoneNo) {
+		this.phoneNo = phoneNo;
+	}
 	public Supplierinfo(SupplierinfoVO supplierInfoVO) {
 		this.supplierId = supplierInfoVO.getSupplierId();
 		this.supplierName = supplierInfoVO.getSupplierName();
 		this.supplierAddress = supplierInfoVO.getSupplierAddress();
 		this.supplierRating = supplierInfoVO.getSupplierRating();
 		this.walletAddress = supplierInfoVO.getWalletAddress();
+		this.comments = supplierInfoVO.getComments();
+		this.emailAddress = supplierInfoVO.getEmailAddress();
+		this.phoneNo = supplierInfoVO.getPhoneNo();
+		
+		this.isAdmin = supplierInfoVO.getIsAdmin();
+		this.isRegistered = supplierInfoVO.getIsRegistered();
+		this.key = supplierInfoVO.getKey();
 		
 	}
 
+	public Integer getIsAdmin() {
+		return isAdmin;
+	}
+	public void setIsAdmin(Integer isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 	public Integer getSupplierId() {
 		return this.supplierId;
 	}

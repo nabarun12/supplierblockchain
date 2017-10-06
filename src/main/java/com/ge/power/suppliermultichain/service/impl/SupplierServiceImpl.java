@@ -53,7 +53,29 @@ public class SupplierServiceImpl implements SupplierService {
 		return supplierinfoVo;
 		
 	}
-
+	
+	@Override
+	public SupplierinfoVO findBySuppName(String suppName){
+		Supplierinfo supplierinfo;
+		SupplierinfoVO SupplierinfoVo;
+		supplierinfo = suplierInfoRepositoryImpl.findSupplierBySupplierName(suppName);
+		SupplierinfoVO supplierinfoVo = new SupplierinfoVO(supplierinfo);
+		return supplierinfoVo;
+		
+	}
+	@Override
+	public List<SupplierinfoVO> findPendingApprovalSupp() {
+		List <Supplierinfo>listSupplierinfo = new ArrayList<Supplierinfo>();
+		List <SupplierinfoVO>listSupplierinfoVo = new ArrayList<SupplierinfoVO>();
+		listSupplierinfo= suplierInfoRepositoryImpl.findAllPendingSuppliers();
+		for(Supplierinfo supplierInfo : listSupplierinfo){
+						
+			SupplierinfoVO supplierinfoVo = new SupplierinfoVO(supplierInfo);
+			listSupplierinfoVo.add(supplierinfoVo);
+		}
+		return listSupplierinfoVo;
+		
+	}
 	@Override
 	public List<SupplierinfoVO> updateSupplier(List<SupplierinfoVO> listSupplierVO) {
 		// TODO Auto-generated method stub

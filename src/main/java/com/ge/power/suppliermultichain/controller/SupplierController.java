@@ -49,6 +49,16 @@ public class SupplierController {
 		return supplierService.findByWalletAddress(walletAddress);
 	}
 	
+	@RequestMapping(value = "/findSupplierByName/{suppName}", method = RequestMethod.GET , produces = "application/json")
+	public @ResponseBody SupplierinfoVO findSupplierByName(@PathVariable String suppName ) throws Exception {
+		return supplierService.findBySuppName(suppName);
+	}
+	
+	@RequestMapping(value = "/findPendingApprovalSupp", method = RequestMethod.GET , produces = "application/json")
+	public @ResponseBody List<SupplierinfoVO> findPendingApprovalSupp() throws Exception {
+		return supplierService.findPendingApprovalSupp();
+	}
+	
 	@RequestMapping(value = "/uploadDocument/{keyName}", method = RequestMethod.POST ,consumes = "multipart/form-data")
 	public void uploadDocument(@PathVariable("keyName") String keyName,@RequestParam("file") MultipartFile uploadFile, @RequestParam("name") String name)  throws UnsupportedEncodingException{
 		supplierS3Service.uploadFile(keyName, uploadFile);
